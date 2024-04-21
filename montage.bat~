@@ -1,0 +1,35 @@
+@echo off
+
+rem combine *.mp4 in directory from 1.mp4, 2.mp4, 3.mp4, etc. to output.mp4
+
+@echo off
+setlocal enabledelayedexpansion
+
+rem set the output file name
+set "output=montage.mp4"
+
+rem set the file extension of the video files
+set "extension=mp4"
+
+rem create a temporary file to store the video file paths
+set "tempFile=temp_video_list.txt"
+echo. > "%tempFile%"
+
+rem get the list of video files in the current directory
+set "videoFiles="
+for %%i in ("*.%extension%") do (
+    set "videoFiles=!videoFiles! "%%i""
+)
+
+rem sort the video files numerically
+for /f "tokens=*" %%i in ('echo !videoFiles! ^| tr " " "\n" ^| sort') do (
+    echo file '%%i'>> "%tempFile%"
+)
+
+rem use FFmpeg to concatenate the video files
+ffmpeg -f concat -safe 0 -i "%tempFile%" -c copy "%output%"
+
+rem delete the temporary file
+del "%tempFile%"
+
+pause
