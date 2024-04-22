@@ -1,13 +1,13 @@
 @echo off
-
+:: combines clips into one single video
 :: TO-DO: handle transitions 
 rem (echo file '1.mp4' & echo file '2.mp4' )>list.txt
 rem ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4
 
-:: Create File List
+:: create File List
 for %%i in (*.mp4) do echo file '%%i'>> mylist.txt
 
-:: Concatenate Files
+:: concatenate Files
 ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4
 
 :: handle transitions between .mp4s

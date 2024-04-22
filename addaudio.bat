@@ -1,5 +1,5 @@
 @echo off
-
+:: adding audio over .mp4s
 :: set input files
 set video=upscale.mp4
 set audio=combined.mp3

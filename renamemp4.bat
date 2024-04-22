@@ -1,4 +1,5 @@
 @echo off
+:: renames .mp4s in directory giving them numbers 1.mp4, 2.mp4, 3.mp4 etc.
 setlocal enabledelayedexpansion
 
 set "count=1"
@@ -13,15 +14,15 @@ for %%f in (*.mp4) do (
         goto :eof
     )
     
-    rem Rename the file to the current count
+    rem rename the file to the current count
     ren "%%f" "!count!.mp4"
     echo File renamed to !count!.mp4
     
-    rem Increment the count
+    rem increment the count
     set /a "count+=1"
 )
 
-rem Check if any .mp4 files were found
+rem check if any .mp4 files were found
 if "%count%"=="1" (
     echo No .mp4 files found in the current directory.
     pause

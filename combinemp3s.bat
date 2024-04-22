@@ -1,5 +1,5 @@
 @echo off
-
+:: combine mp3s into one-file to merge into videos
 :: set the initial file number
 set "count=1"
 

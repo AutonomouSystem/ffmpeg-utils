@@ -1,5 +1,5 @@
 @echo off
-
+:: original idea from tens, fake-upscaling to 4k for better YouTube codec
 rem check if a file with the name output.mp4 exists
 if not exist "output.mp4" (
     echo File output.mp4 not found in the current directory.

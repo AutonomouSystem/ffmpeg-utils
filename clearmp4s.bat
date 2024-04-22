@@ -1,6 +1,5 @@
 @echo off
-
-rem check if any *mp4 or mp3 files exist, if not, exit
+:: clear any mp4, mp3s in directory
 
 if not exist *.mp4 if not exist *.mp3 (
     echo No mp4 or mp3 files found.

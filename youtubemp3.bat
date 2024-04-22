@@ -1,4 +1,6 @@
 @echo off
+:: use yt-dlp to download YouTube links into .mp3
+:: recommend use chocolatey on Windows e.g. choco install yt-dlp
 rem yt-dlp mp3 from link or playlist
 rem TO-DO add playlist support 
 

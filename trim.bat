@@ -1,5 +1,5 @@
 @echo off
-
+:: trim mp4 to custom timestamps
 rem check if 1.mp4 exists in the current directory
 if not exist "1.mp4" (
     echo File 1.mp4 not found in the current directory.

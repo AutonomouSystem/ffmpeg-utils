@@ -1,5 +1,5 @@
 @echo off
-
+:: trim .mp3s to custom timestmaps
 rem check if 1.mp3 exists in the current directory
 if not exist "1.mp3" (
     echo File 1.mp3 not found in the current directory.
