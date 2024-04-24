@@ -1,31 +1,17 @@
 @echo off
-:: renames .mp4s in directory giving them numbers 1.mp4, 2.mp4, 3.mp4 etc.
-setlocal enabledelayedexpansion
+:: renames .mp4s in directory giving them numbers 1.mp4, 2.mp4, 3.mp4 
+etc.
+:: rencode different mp4 types to match
 
-set "count=1"
+setlocal EnableDelayedExpansion
 
-rem Loop through all the .mp4 files in the current directory
+set counter=1
+
 for %%f in (*.mp4) do (
-    rem Check if a file with the current count already exists
-    if exist "!count!.mp4" (
-        echo A file with the name !count!.mp4 already exists in this directory.
-        echo Please move or rename the existing file before running this script.
-        pause
-        goto :eof
-    )
-    
-    rem rename the file to the current count
-    ren "%%f" "!count!.mp4"
-    echo File renamed to !count!.mp4
-    
-    rem increment the count
-    set /a "count+=1"
+    ffmpeg -i "%%f" -c:v libx265 -crf 17 -preset slower -c:a aac -b:a 128k -ar 48000 -s 1920x1080 -r 120 -pix_fmt yuv420p -f mp4 -y "!counter!.mp4"
+    set /a counter+=1
 )
 
-rem check if any .mp4 files were found
-if "%count%"=="1" (
-    echo No .mp4 files found in the current directory.
-    pause
-)
-
+echo "Jobs Done!"
+pause
 endlocal
