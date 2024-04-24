@@ -1,4 +1,3 @@
-
 import os
 import subprocess
 
@@ -27,11 +26,20 @@ def combine_mp3s():
     subprocess.call(command, shell=True)
     os.remove("concat.txt")
 
+def fade_out(input_file, output_file, start_time=25, duration=9, curve='tri'):
+    command = f'ffmpeg -i {input_file} -af "afade=t=out:st={start_time}:d={duration}:curve={curve}" -c:v copy {output_file}'
+    subprocess.call(command, shell=True)
+
 def montage():
+    counter = 0
     with open("mylist.txt", "w") as f:
         for file in os.listdir():
             if file.endswith(".mp4"):
+                command = f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{file}"'
+                duration = subprocess.check_output(command, shell=True).decode().strip()
                 f.write(f"file '{file}'\n")
+                f.write(f"duration {duration}\n")
+                counter += 1
     
     command = 'ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4'
     subprocess.call(command, shell=True)
@@ -42,7 +50,7 @@ def tens4k():
         print("File output.mp4 not found in the current directory.")
         return
     
-    command = 'ffmpeg -i output.mp4 -vf scale=3840:2160:flags=lanczos -c:a copy -c:v hevc_nvenc -preset slow -rc vbr -b:v 400M -cq 1 upscale.mp4'
+    command = 'ffmpeg -i output.mp4 -c:v hevc_nvenc -preset slow -rc vbr -cq 19 -r 120 -s 3840x2160 -pix_fmt yuv420p upscale.mp4'
     subprocess.call(command, shell=True)
 
 def youtube_mp3():
@@ -67,7 +75,7 @@ def trim_mp4():
     start_time = input("Enter start timestamp (e.g., 00:02:13): ")
     end_time = input("Enter end timestamp (e.g., 00:02:52): ")
     
-    command = f'ffmpeg -i 1.mp4 -ss {start_time} -to {end_time} -c:v libx264 -c:a aac -strict -2 2.mp4'
+    command = f'ffmpeg -hwaccel cuda -i 1.mp4 -ss {start_time} -to {end_time} -c:v hevc_nvenc -preset slow -rc vbr -cq 17 -b:v 5M -maxrate 5M -bufsize 10M -r 120 -c:a aac -b:a 192k -strict -2 2.mp4'
     subprocess.call(command, shell=True)
     print(f"Error level: {subprocess.call(command, shell=True)}")
 
@@ -96,34 +104,28 @@ def clear_files():
         print(f"File deleted: {file}")
 
 def rename_mp4():
-    count = 1
+    counter = 1
     for file in os.listdir():
         if file.endswith(".mp4"):
-            if os.path.exists(f"{count}.mp4"):
-                print(f"A file with the name {count}.mp4 already exists in this directory.")
-                print("Please move or rename the existing file before running this script.")
-                return
-            os.rename(file, f"{count}.mp4")
-            print(f"File renamed to {count}.mp4")
-            count += 1
-    
-    if count == 1:
-        print("No .mp4 files found in the current directory.")
+            command = f'ffmpeg -i "{file}" -c:v libx265 -crf 17 -preset slower -c:a aac -b:a 128k -ar 48000 -s 1920x1080 -r 120 -pix_fmt yuv420p -f mp4 -y "{counter}.mp4"'
+            subprocess.call(command, shell=True)
+            counter += 1
 
 def main():
     while True:
         print("\n1. Add Audio")
         print("2. Combine MP3s")
-        print("3. Montage")
-        print("4. Tens4k")
-        print("5. YouTube MP3")
-        print("6. Trim MP4")
-        print("7. Trim MP3")
-        print("8. Clear Files")
-        print("9. Rename MP4")
-        print("10. Exit")
+        print("3. Fade Out")
+        print("4. Montage")
+        print("5. Tens4k")
+        print("6. YouTube MP3")
+        print("7. Trim MP4")
+        print("8. Trim MP3")
+        print("9. Clear Files")
+        print("10. Rename MP4")
+        print("11. Exit")
         
-        choice = input("Enter your choice (1-10): ")
+        choice = input("Enter your choice (1-11): ")
         
         if choice == "1":
             video = input("Enter video file: ")
@@ -133,20 +135,24 @@ def main():
         elif choice == "2":
             combine_mp3s()
         elif choice == "3":
-            montage()
+            input_file = input("Enter input file: ")
+            output_file = input("Enter output file: ")
+            fade_out(input_file, output_file)
         elif choice == "4":
-            tens4k()
+            montage()
         elif choice == "5":
-            youtube_mp3()
+            tens4k()
         elif choice == "6":
-            trim_mp4()
+            youtube_mp3()
         elif choice == "7":
-            trim_mp3()
+            trim_mp4()
         elif choice == "8":
-            clear_files()
+            trim_mp3()
         elif choice == "9":
-            rename_mp4()
+            clear_files()
         elif choice == "10":
+            rename_mp4()
+        elif choice == "11":
             break
         else:
             print("Invalid choice. Please try again.")
